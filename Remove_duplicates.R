@@ -7,20 +7,21 @@
 ###################################
 
 ##        to do       ## 
-  # create list of weird signs and loop through this to take them out
-  # once everything is clean, check for duplicates 
+  # refine symbols taken out 
+  
 
 
 ##        done in this version    ## 
 
-  # rewrite xsls to csv
-  # reduce dataframes and merge 
-  # put everything in lower case 
+  # Finished first version: current total of 1283 unique 
+
 
 #####################################
+
 library(readxl)
 library(gtools)
 require(openxlsx)
+library(data.table)
 
 # working directory -> set to where the files are 
 setwd('\\\\webfolders.ncl.ac.uk@SSL/DavWWWRoot/rdw/ion02/02/smulderslab/VeraVinken/1-PHD_PROJECT/Literature review/Searches/2022_06_23')
@@ -86,5 +87,21 @@ for (col in 1:ncol(combined_data)){
       # make everything lower case: 
       combined_data[,col]<-tolower(combined_data[,col])
 }
+
+
+# create a vector with all the weird symbols 
+symbols<-cbind("[_]", "[-]", "[,]", '[.]', "[.]", "[©.*]", "[']","[‘]", "[:]", "[;]", "[<>]", "[?]", "[[:space:]]", "[^[:graph:]]", "[()]", "[^[:alnum:]]", '[[:digit:]]+')
+#symbols<-cbind("[_]", "[-]", "[,]", '[.]', "[.]", "[©.*]", "[']","[‘]", "[:]", "[;]", "[<>]", "[?]", "[<i>]", "[</i>]")
+
+for (s in 1:(length(symbols))){
+  combined_data$title<-gsub(symbols[s], " ", combined_data$title)
+  print(symbols[s])
+}
+
+# Trim white space at the lead and tail of string
+combined_data$title<-trimws(combined_data$title)
+# create df with unique titles 
+unique_titles<-combined_data[!duplicated(combined_data$title),]
+
 
 
